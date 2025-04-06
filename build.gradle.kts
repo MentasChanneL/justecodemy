@@ -29,7 +29,7 @@ kotlin {
 tasks.withType<Jar> {
     // Otherwise you'll get a "No main manifest attribute" error
     manifest {
-        attributes["Main-Class"] = "study.prikolz.Study"
+        attributes["Main-Class"] = "study.prikolz.Plugin"
     }
 
     // To avoid the duplicate handling strategy error
