@@ -1,0 +1,4 @@
+main: study.prikolz.Study
+version: 1.0
+name: PrikolzStudy
+api-version: 1.20
