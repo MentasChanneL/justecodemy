@@ -18,6 +18,7 @@ object CustomItems {
         this.plugin = plugin
         this.nameKey = NamespacedKey(this.plugin, "customitem")
         register("breaker_bow", BreakerBowItem)
+        register("ultimate_breaker_bow", UltimateBreakerBowItem)
     }
 
     fun register(id: String, customItem: CustomItem): Boolean {

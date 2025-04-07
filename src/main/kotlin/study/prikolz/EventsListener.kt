@@ -18,8 +18,11 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.EntityShootBowEvent
+import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryType
@@ -32,6 +35,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
+import study.prikolz.entity.CustomEntities
 import study.prikolz.gui.CustomGUI
 import study.prikolz.items.CustomItems
 import java.util.*
@@ -108,6 +112,7 @@ object EventsListener : Listener {
     }
 
     private fun tick() {
+        try { CustomEntities.tick() } catch (e: Throwable) { this.plugin.logger.severe("CustomEntities.tick: ${e.message}") }
         for (uuid in superJumpCDs.keys.toList()) superJumpTick(uuid)
         for (ent in lifeTimeEntities.keys.toList()) lifeTimeEntityTick(ent)
         var i = 0
@@ -260,6 +265,7 @@ object EventsListener : Listener {
 
     @EventHandler
     fun entityDeath(event: EntityDeathEvent) {
+        CustomEntities.deathEvent(event)
         if (event.entity.type != EntityType.SHEEP) return
         val cause = event.damageSource.causingEntity
         cause?.also {
@@ -282,5 +288,20 @@ object EventsListener : Listener {
             val dropped = event.entity.world.dropItemNaturally(event.entity.location, sword)
             lifeTimeEntities[dropped] = 40
         }
+    }
+
+    @EventHandler
+    fun entityDamage(event: EntityDamageEvent) {
+        CustomEntities.hurtEvent(event)
+    }
+
+    @EventHandler
+    fun projectileHit(event: ProjectileHitEvent) {
+        CustomEntities.projectileHitEvent(event)
+    }
+
+    @EventHandler
+    fun entityExplode(event: EntityExplodeEvent) {
+        CustomEntities.explodeEvent(event)
     }
 }
