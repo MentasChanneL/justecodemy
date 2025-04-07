@@ -7,7 +7,9 @@ import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import study.prikolz.command.BowCommand
 import study.prikolz.command.PlayerArgumentType
+import study.prikolz.command.ScoreCommand
 import study.prikolz.gui.CustomGUI
 import study.prikolz.gui.InvSeeGUI
 
@@ -18,6 +20,8 @@ object PluginCommands {
             r.register(myTps())
             r.register(reloadConf())
             r.register(invSee())
+            r.register(ScoreCommand.build())
+            r.register(BowCommand.build())
         }
     }
 

@@ -19,9 +19,11 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryType
+import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
@@ -31,6 +33,7 @@ import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import study.prikolz.gui.CustomGUI
+import study.prikolz.items.CustomItems
 import java.util.*
 
 object EventsListener : Listener {
@@ -147,6 +150,7 @@ object EventsListener : Listener {
             return
         }
         if (event.block.type == Material.STONE) event.isCancelled = true
+        Scores.addScore(event.player, event.block.type)
     }
 
     @EventHandler
@@ -160,6 +164,7 @@ object EventsListener : Listener {
 
     @EventHandler
     fun playerInteract(event: PlayerInteractEvent) {
+        CustomItems.click(event)
         val block = event.clickedBlock
         if (block?.type == Material.SHORT_GRASS) {
             block.type = Material.AIR
@@ -193,9 +198,10 @@ object EventsListener : Listener {
             endSpawn.extra(0.1)
             endSpawn.allPlayers()
 
-            val tickSpawn = endSpawn.clone()
+            val tickSpawn = ParticleBuilder(Particle.ELECTRIC_SPARK)
             tickSpawn.count(1)
             tickSpawn.extra(0.0)
+            tickSpawn.location(player.location)
             lifeTimeObjects.add(object : LifeTimeObject {
 
                 private val endSpawn = endSpawn
@@ -240,6 +246,16 @@ object EventsListener : Listener {
             CustomGUI.holders.remove(player)
             it.close()
         }
+    }
+
+    @EventHandler
+    fun playerDropEvent(event: PlayerDropItemEvent) {
+        CustomItems.drop(event)
+    }
+
+    @EventHandler
+    fun entityBowEvent(event: EntityShootBowEvent) {
+        CustomItems.shoot(event)
     }
 
     @EventHandler

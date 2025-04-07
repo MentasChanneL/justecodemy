@@ -11,3 +11,6 @@ regions:
 
 commands-messages:
   mytps: "TPS: %f"
+  score-set: "Score %p are set to %a points"
+  score-add: "Added %a points from %p score"
+  score-remove: "Removed %a points from %p score"

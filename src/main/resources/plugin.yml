@@ -9,3 +9,5 @@ permissions:
     default: op
   command.invsee:
     default: op
+  command.score:
+    default: op
