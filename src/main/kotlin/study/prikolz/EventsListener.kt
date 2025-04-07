@@ -19,6 +19,9 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
@@ -27,16 +30,16 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
+import study.prikolz.gui.CustomGUI
 import java.util.*
 
-interface LifeTimeObject {
-    fun getLife(): Int
-    fun subLife(amount: Int)
-    fun run()
-    fun end()
-}
-
 object EventsListener : Listener {
+
+    interface LifeTimeObject {
+        var life: Int
+        fun run()
+        fun end()
+    }
 
     private val ownedPigs = mutableMapOf<UUID, UUID>()
     private val superJumpCDs = mutableMapOf<UUID, Int>()
@@ -47,9 +50,11 @@ object EventsListener : Listener {
     private const val SUPER_JUMP_CD = 1400
 
     private var schedulerTick: Int = -1
+    private lateinit var plugin: Plugin
 
     fun initialize(plugin: Plugin) {
         schedulerTick = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, { tick() }, 1, 1)
+        this.plugin = plugin
     }
 
     private fun formatTick(tick: Int): String {
@@ -60,7 +65,7 @@ object EventsListener : Listener {
     }
 
     private fun superJumpTick(uuid: UUID) {
-        superJumpCDs[uuid]?.let {
+        superJumpCDs[uuid]?.also {
             val player = Bukkit.getPlayer(uuid)
             if (player == null || !player.isValid) {
                 superJumpCDs.remove(uuid)
@@ -89,8 +94,8 @@ object EventsListener : Listener {
     }
 
     private fun lifeTimeObjectTick(index: Int, obj: LifeTimeObject): Int {
-        obj.subLife(1)
-        if (obj.getLife() < 1) {
+        obj.life--
+        if (obj.life < 1) {
             lifeTimeObjects.removeAt(index)
             obj.end()
             return index
@@ -109,9 +114,9 @@ object EventsListener : Listener {
     @EventHandler
     fun playerJoin(event: PlayerJoinEvent) {
         event.player.sendMessage(Component.text("Привет!"))
-        ownedPigs[event.player.uniqueId]?.let {
+        ownedPigs[event.player.uniqueId]?.also {
             val ent = Bukkit.getEntity(it)
-            ent?.also { ent.remove() }
+            ent?.remove()
             ownedPigs.remove(event.player.uniqueId)
         }
         prefixes[event.player.uniqueId] = Component.text("[Игрок] ").color(TextColor.color(150, 150, 150))
@@ -130,18 +135,26 @@ object EventsListener : Listener {
 
     @EventHandler
     fun playerMsg(event: AsyncChatEvent) {
-        prefixes[event.player.uniqueId]?.let {
+        prefixes[event.player.uniqueId]?.also {
             Bukkit.broadcast(it.append(event.player.name()).append(Component.text(" > ")).append(event.message()))
         }
     }
 
     @EventHandler
     fun playerBlockBreak(event: BlockBreakEvent) {
+        if (!Region.isAllowOnRegion(event.block.location, event.player.uniqueId)) {
+            event.isCancelled = true
+            return
+        }
         if (event.block.type == Material.STONE) event.isCancelled = true
     }
 
     @EventHandler
     fun playerBlockPlace(event: BlockPlaceEvent) {
+        if (!Region.isAllowOnRegion(event.block.location, event.player.uniqueId)) {
+            event.isCancelled = true
+            return
+        }
         event.player.inventory.addItem(ItemStack(event.block.type, 1))
     }
 
@@ -185,17 +198,9 @@ object EventsListener : Listener {
             tickSpawn.extra(0.0)
             lifeTimeObjects.add(object : LifeTimeObject {
 
-                private var life = 200
                 private val endSpawn = endSpawn
                 private val tickSpawn = tickSpawn
-
-                override fun getLife(): Int {
-                    return this.life
-                }
-
-                override fun subLife(amount: Int) {
-                    this.life--
-                }
+                override var life: Int = 200
 
                 override fun run() {
                     this.tickSpawn.spawn()
@@ -213,6 +218,27 @@ object EventsListener : Listener {
         if (event.isSneaking && !superJumpCDs.containsKey(event.player.uniqueId)) {
             event.player.velocity = event.player.velocity.add(Vector(0.0, 1.5, 0.0))
             superJumpCDs[event.player.uniqueId] = Bukkit.getServer().currentTick + SUPER_JUMP_CD
+        }
+    }
+
+    @EventHandler
+    fun playerClickInventory(event: InventoryClickEvent) {
+        if(event.whoClicked !is Player) return
+        val player = event.whoClicked as Player
+        val clicked = event.clickedInventory?: return
+        CustomGUI.holders[player]?.also {
+            val isMine = clicked.type == InventoryType.PLAYER
+            if (!it.click(isMine, event.slot, event.action)) event.isCancelled = true
+        }
+    }
+
+    @EventHandler
+    fun playerCloseInventory(event: InventoryCloseEvent) {
+        if(event.player !is Player) return
+        val player = event.player as Player
+        CustomGUI.holders[player]?.also {
+            CustomGUI.holders.remove(player)
+            it.close()
         }
     }
 

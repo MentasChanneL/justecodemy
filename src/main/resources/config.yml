@@ -1,0 +1,13 @@
+regions:
+  world:
+    1: [20, -64, 20]
+    2: [-20, 312, -20]
+  world_nether:
+    1: [ 20, 0, 20 ]
+    2: [ -20, 256, -20 ]
+  world_the_end:
+    1: [ 20, 0, 20 ]
+    2: [ -20, 256, -20 ]
+
+commands-messages:
+  mytps: "TPS: %f"

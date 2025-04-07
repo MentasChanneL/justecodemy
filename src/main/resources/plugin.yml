@@ -2,3 +2,10 @@ main: study.prikolz.Plugin
 version: 1.0
 name: PrikolzStudy
 api-version: 1.20
+permissions:
+  command.mytps:
+    default: true
+  command.reloadconf:
+    default: op
+  command.invsee:
+    default: op
