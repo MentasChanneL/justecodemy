@@ -13,3 +13,5 @@ permissions:
     default: op
   command.regionwhitelist:
     default: op
+  command.info:
+    default: op

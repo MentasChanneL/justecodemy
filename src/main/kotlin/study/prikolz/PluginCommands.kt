@@ -15,7 +15,7 @@ object PluginCommands {
     fun register(plugin: Plugin) {
         plugin.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS) {
             val r = it.registrar()
-            r.register(myTps())
+            r.register(TPSCommand.build())
             r.register(reloadConf())
             r.register(invSee())
             r.register(ScoreCommand.build())
@@ -23,24 +23,9 @@ object PluginCommands {
             r.register(ParticlesCommand.build())
             r.register(RegionCommand.build())
             r.register(PatrolCommand.build())
+            r.register(ImageURLCommand.build(plugin))
+            r.register(InfoCommand.build())
         }
-    }
-
-    private fun myTps(): LiteralCommandNode<CommandSourceStack> {
-        return Commands.literal("mytps").executes { context ->
-            if (!context.source.sender.hasPermission("command.mytps")) {
-                context.source.sender.sendMessage("No permissions!")
-            }else {
-                context.source.sender.sendMessage(
-                    getMessage("mytps").replace(
-                        "%f",
-                        Bukkit.getTPS()[0].toString(),
-                        false
-                    )
-                )
-            }
-            1
-        }.build()
     }
 
     private fun reloadConf(): LiteralCommandNode<CommandSourceStack> {

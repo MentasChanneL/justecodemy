@@ -111,6 +111,7 @@ object EventsListener : Listener {
     private fun tick() {
         Scores.tick()
         ParticlesCommand.tick()
+        try { CustomGUI.tick() } catch (t: Throwable) { this.plugin.logger.severe(t.message) }
         try { CustomEntities.tick() } catch (e: Throwable) { this.plugin.logger.severe("CustomEntities.tick: ${e.message}") }
         for (uuid in superJumpCDs.keys.toList()) superJumpTick(uuid)
         for (ent in lifeTimeEntities.keys.toList()) lifeTimeEntityTick(ent)
