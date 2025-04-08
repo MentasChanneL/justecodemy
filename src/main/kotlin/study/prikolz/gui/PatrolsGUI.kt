@@ -1,7 +1,6 @@
 package study.prikolz.gui
 
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -12,6 +11,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import study.prikolz.command.PatrolCommand
 import study.prikolz.entity.ZombieWardenEntity
+import study.prikolz.util.ItemUtils
 
 class PatrolsGUI(private var holder: Player) : CustomGUI() {
 
@@ -76,15 +76,15 @@ class PatrolsGUI(private var holder: Player) : CustomGUI() {
             meta.displayName(Component.text(name).decoration(TextDecoration.ITALIC, false))
             val lore = mutableListOf<Component>()
             val zombieLoc: Location? = patrol.wardens.first().entity?.location
-            lore.add( normalText("x: ${zombieLoc?.blockX?: "?"} y: ${zombieLoc?.blockY?: "?"} z: ${zombieLoc?.blockZ?: "?"}", 100, 255, 0) )
-            lore.add( normalText("Points count: ${patrol.points.size}", 0, 255, 100) )
+            lore.add( ItemUtils.text("x: ${zombieLoc?.blockX?: "?"} y: ${zombieLoc?.blockY?: "?"} z: ${zombieLoc?.blockZ?: "?"}", 100, 255, 0) )
+            lore.add( ItemUtils.text("Points count: ${patrol.points.size}", 0, 255, 100) )
             meta.lore(lore)
             head.itemMeta = meta
             this.inv.setItem(slot, head)
             headValues[slot] = name
             slot++
             if (slot > 25) {
-                fastStack(26, this.inv, Material.BARRIER, normalText("Too many patrols...", 255, 100, 0))
+                fastStack(26, this.inv, Material.BARRIER, ItemUtils.text("Too many patrols...", 255, 100, 0))
                 break
             }
         }

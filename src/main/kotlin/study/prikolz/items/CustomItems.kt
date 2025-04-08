@@ -4,6 +4,7 @@ import org.bukkit.NamespacedKey
 import org.bukkit.event.entity.EntityShootBowEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import study.prikolz.Plugin
@@ -19,6 +20,7 @@ object CustomItems {
         this.nameKey = NamespacedKey(this.plugin, "customitem")
         register("breaker_bow", BreakerBowItem)
         register("ultimate_breaker_bow", UltimateBreakerBowItem)
+        register("wand", RegionStickItem)
     }
 
     fun register(id: String, customItem: CustomItem): Boolean {
@@ -58,5 +60,9 @@ object CustomItems {
 
     fun drop(event: PlayerDropItemEvent) {
         asCustomItem(event.itemDrop.itemStack)?.drop(event)
+    }
+
+    fun swap(event: PlayerSwapHandItemsEvent) {
+        asCustomItem(event.offHandItem)?.swap(event)
     }
 }

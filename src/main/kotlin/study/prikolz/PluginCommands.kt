@@ -25,6 +25,7 @@ object PluginCommands {
             r.register(PatrolCommand.build())
             r.register(ImageURLCommand.build(plugin))
             r.register(InfoCommand.build())
+            r.register(WandCommand.build())
         }
     }
 

@@ -2,6 +2,7 @@ package study.prikolz
 
 import com.destroystokyo.paper.ParticleBuilder
 import io.papermc.paper.event.player.AsyncChatEvent
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
@@ -22,13 +23,7 @@ import org.bukkit.event.entity.*
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryType
-import org.bukkit.event.player.PlayerDropItemEvent
-import org.bukkit.event.player.PlayerInteractEntityEvent
-import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerMoveEvent
-import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.event.player.PlayerToggleSneakEvent
+import org.bukkit.event.player.*
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import study.prikolz.command.ParticlesCommand
@@ -111,6 +106,7 @@ object EventsListener : Listener {
     private fun tick() {
         Scores.tick()
         ParticlesCommand.tick()
+        try { Selection.tick() } catch (t: Throwable) { this.plugin.logger.severe("Selection.tick: ${t.message}") }
         try { CustomGUI.tick() } catch (t: Throwable) { this.plugin.logger.severe(t.message) }
         try { CustomEntities.tick() } catch (e: Throwable) { this.plugin.logger.severe("CustomEntities.tick: ${e.message}") }
         for (uuid in superJumpCDs.keys.toList()) superJumpTick(uuid)
@@ -143,9 +139,13 @@ object EventsListener : Listener {
 
     @EventHandler
     fun playerMsg(event: AsyncChatEvent) {
-        prefixes[event.player.uniqueId]?.also {
-            Bukkit.broadcast(it.append(event.player.name()).append(Component.text(" > ")).append(event.message()))
-        }
+        event.renderer { p, c1, c2, a -> renderMessage(p, c1, c2, a) }
+    }
+
+    private fun renderMessage(player: Player, c1: Component, msg: Component, audience: Audience): Component {
+        var name = c1
+        prefixes[player.uniqueId]?.also { name = it.append(c1) }
+        return Component.empty().append(name).append(Component.text(" > ")).append(msg)
     }
 
     @EventHandler
@@ -256,6 +256,11 @@ object EventsListener : Listener {
     @EventHandler
     fun playerDropEvent(event: PlayerDropItemEvent) {
         CustomItems.drop(event)
+    }
+
+    @EventHandler
+    fun playerSwapHands(event: PlayerSwapHandItemsEvent) {
+        CustomItems.swap(event)
     }
 
     @EventHandler

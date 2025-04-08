@@ -1,13 +1,12 @@
 package study.prikolz.gui
 
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.TextColor
-import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.Inventory
+import study.prikolz.util.ItemUtils
 
 class ConfirmGUI(private var holder: Player, private val msg: Component, private val yes: Runnable, private val no: Runnable) : CustomGUI() {
 
@@ -15,8 +14,8 @@ class ConfirmGUI(private var holder: Player, private val msg: Component, private
 
     private fun fill(): Inventory {
         val inv = Bukkit.createInventory(null, 27, this.msg)
-        fastStack(11, inv, Material.LIME_CONCRETE, normalText("✔ Confirm", 0, 255, 0))
-        fastStack(15, inv, Material.RED_CONCRETE, normalText("❌ Decline", 255, 0, 0))
+        fastStack(11, inv, Material.LIME_CONCRETE, ItemUtils.text("✔ Confirm", 0, 255, 0))
+        fastStack(15, inv, Material.RED_CONCRETE, ItemUtils.text("❌ Decline", 255, 0, 0))
         return inv
     }
 
