@@ -11,3 +11,5 @@ permissions:
     default: op
   command.score:
     default: op
+  command.regionwhitelist:
+    default: op

@@ -6,13 +6,13 @@ import java.util.*
 
 class Region(pos1: List<Int>, pos2: List<Int>, val world: World) {
 
-    private val minX: Int = if(pos1[0] < pos2[0]) pos1[0] else pos2[0]
-    private val minY: Int = if(pos1[1] < pos2[1]) pos1[1] else pos2[1]
-    private val minZ: Int = if(pos1[2] < pos2[2]) pos1[2] else pos2[2]
+    private val minX: Int = Math.min(pos1[0], pos2[0])
+    private val minY: Int = Math.min(pos1[1], pos2[1])
+    private val minZ: Int = Math.min(pos1[2], pos2[2])
 
-    private val maxX: Int = if(pos1[0] > pos2[0]) pos1[0] else pos2[0]
-    private val maxY: Int = if(pos1[1] > pos2[1]) pos1[1] else pos2[1]
-    private val maxZ: Int = if(pos1[2] > pos2[2]) pos1[2] else pos2[2]
+    private val maxX: Int = Math.max(pos1[0], pos2[0])
+    private val maxY: Int = Math.max(pos1[1], pos2[1])
+    private val maxZ: Int = Math.max(pos1[2], pos2[2])
 
     fun inRegion(check: Location): Boolean {
         if (check.world != world) return false

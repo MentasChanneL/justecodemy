@@ -2,10 +2,7 @@ package study.prikolz.entity
 
 import org.bukkit.Location
 import org.bukkit.entity.Entity
-import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.event.entity.EntityDeathEvent
-import org.bukkit.event.entity.EntityExplodeEvent
-import org.bukkit.event.entity.ProjectileHitEvent
+import org.bukkit.event.entity.*
 import study.prikolz.Plugin
 import java.util.UUID
 
@@ -55,6 +52,9 @@ object CustomEntities {
     }
     fun explodeEvent(event: EntityExplodeEvent) {
         asCustomEntity(event.entity)?.explodeEvent(event)
+    }
+    fun entityTarget(event: EntityTargetLivingEntityEvent) {
+        asCustomEntity(event.entity)?.targetEvent(event)
     }
 
     fun asCustomEntity(entity: Entity?): CustomEntity? {

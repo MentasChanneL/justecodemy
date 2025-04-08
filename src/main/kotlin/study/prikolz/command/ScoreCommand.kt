@@ -5,14 +5,51 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.tree.LiteralCommandNode
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import study.prikolz.PluginCommands
 import study.prikolz.Scores
+import java.util.UUID
 
 object ScoreCommand {
+
+    val cooldowns = mutableMapOf<UUID, Int>()
+
     fun build(): LiteralCommandNode<CommandSourceStack> {
         return Commands.literal("score")
+            .then(Commands.literal("show")
+                .executes { context ->
+                    if (context.source.sender is Player) {
+                        val player = context.source.sender as Player
+                        if ((cooldowns[player.uniqueId]?: 0) > Bukkit.getCurrentTick()) {
+                            player.sendMessage(PluginCommands.getMessage("score-cd"))
+                            return@executes 0
+                        }
+                        cooldowns[player.uniqueId] = Bukkit.getCurrentTick() + 60
+                        Scores.showBoard(player)
+                        return@executes 1
+                    }
+                    context.source.sender.sendMessage("Command only for players!")
+                    return@executes 0
+                }
+            )
+            .then(Commands.literal("hide")
+                .executes { context ->
+                    if (context.source.sender is Player) {
+                        val player = context.source.sender as Player
+                        if ((cooldowns[player.uniqueId]?: 0) > Bukkit.getCurrentTick()) {
+                            player.sendMessage(PluginCommands.getMessage("score-cd"))
+                            return@executes 0
+                        }
+                        cooldowns[player.uniqueId] = Bukkit.getCurrentTick() + 40
+                        Scores.hideBoard(player)
+                        return@executes 1
+                    }
+                    context.source.sender.sendMessage("Command only for players!")
+                    return@executes 0
+                }
+            )
             .then(Commands.argument("operation", SuggestionArgumentType(mutableListOf("add", "remove", "set")))
                 .then(Commands.argument("player", PlayerArgumentType)
                     .then(Commands.argument("amount", IntegerArgumentType.integer())

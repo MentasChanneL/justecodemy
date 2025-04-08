@@ -82,4 +82,14 @@ object Config {
         return true
     }
 
+    fun regionWhitelistRemove(uuid: UUID): Boolean {
+        this.regionWhitelist.remove(uuid)
+        val file = File(getDataFolder(), "region_whitelist.yml")
+        if (!file.exists()) return false
+        val yml = YamlConfiguration.loadConfiguration(file)
+        yml.set(uuid.toString(), null)
+        yml.save(file)
+        return true
+    }
+
 }

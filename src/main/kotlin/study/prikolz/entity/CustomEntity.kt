@@ -5,6 +5,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityExplodeEvent
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 
 interface CustomEntity {
@@ -19,6 +20,7 @@ interface CustomEntity {
     fun hurtEvent(event: EntityDamageEvent) {}
     fun deathEvent(event: EntityDeathEvent) {}
     fun explodeEvent(event: EntityExplodeEvent) {}
+    fun targetEvent(event: EntityTargetLivingEntityEvent) {}
     fun isValid(): Boolean {
         return this.entity?.isValid?: false
     }

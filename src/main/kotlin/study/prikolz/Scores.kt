@@ -8,6 +8,7 @@ import org.bukkit.entity.Player
 import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Scoreboard
+import study.prikolz.command.ScoreCommand
 import java.util.UUID
 
 object Scores {
@@ -24,6 +25,29 @@ object Scores {
 
     fun initialization(plugin: Plugin) {
         this.plugin = plugin
+    }
+
+    fun tick() {
+        for((uuid, board) in this.scoreBoardsHolders.toList()) {
+            val obj = board.getObjective("score")?: continue
+            val cd = ScoreCommand.cooldowns[uuid]?: continue
+            if (cd > Bukkit.getCurrentTick()) {
+                obj.getScore("Cooldown ").score = 1 + (cd - Bukkit.getCurrentTick()) / 20
+                continue
+            }
+            board.resetScores("Cooldown ")
+            ScoreCommand.cooldowns.remove(uuid)
+        }
+    }
+
+    fun showBoard(player: Player) {
+        playerUpdate(player)
+        scoreBoardsHolders[player.uniqueId]?.also { player.scoreboard = it }
+    }
+
+    fun hideBoard(player: Player) {
+        playerUpdate(player)
+        scoreBoardsHolders[player.uniqueId].also { player.scoreboard = Bukkit.getScoreboardManager().mainScoreboard }
     }
 
     private fun playerUpdate(player: Player) {
