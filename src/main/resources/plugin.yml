@@ -15,3 +15,7 @@ permissions:
     default: op
   command.info:
     default: op
+  command.set:
+    default: op
+  command.sphere:
+    default: op

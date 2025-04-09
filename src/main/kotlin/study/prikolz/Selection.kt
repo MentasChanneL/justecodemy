@@ -1,12 +1,16 @@
 package study.prikolz
 
 import com.destroystokyo.paper.ParticleBuilder
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes.world
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
+import org.bukkit.block.Block
+import org.bukkit.block.BlockState
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import kotlin.math.*
+
 
 class Selection(var a: Location, var b: Location) {
 
@@ -60,13 +64,13 @@ class Selection(var a: Location, var b: Location) {
                 val from = convertedA.clone().add(Vector (offsets.x * offset.from.x, offsets.y * offset.from.y, offsets.z * offset.from.z))
                 val to = convertedA.clone().add(Vector (offsets.x * offset.to.x, offsets.y * offset.to.y, offsets.z * offset.to.z))
                 val start = Location(from.world,
-                    min(from.x, to.x) ,
-                    min(from.y, to.y) ,
+                    min(from.x, to.x),
+                    min(from.y, to.y),
                     min(from.z, to.z)
                 )
                 val end = Location(from.world,
-                    max(from.x, to.x) ,
-                    max(from.y, to.y) ,
+                    max(from.x, to.x),
+                    max(from.y, to.y),
                     max(from.z, to.z)
                 )
                 var x = start.x
@@ -91,5 +95,29 @@ class Selection(var a: Location, var b: Location) {
             ParticleBuilder(Particle.DUST).data(Particle.DustOptions(Color.fromRGB(255, 100, 0), 1f)))
     }
 
+    fun forEachRegion(condition: (Int, Int, Int) -> BlockPlacement) {
+        val minX = min(this.a.blockX, this.b.blockX)
+        val minY = min(this.a.blockY, this.b.blockY)
+        val minZ = min(this.a.blockZ, this.b.blockZ)
+
+        val maxX = max(this.a.blockX, this.b.blockX)
+        val maxY = max(this.a.blockY, this.b.blockY)
+        val maxZ = max(this.a.blockZ, this.b.blockZ)
+
+        for (y in minY..maxY) {
+            for (x in minX..maxX) {
+                for (z in minZ..maxZ) {
+                    val invoke = condition.invoke(x, y, z)
+                    if (invoke.place) {
+                        val block: Block = this.a.world.getBlockAt(x, y, z)
+                        block.setType(invoke.state.type, false)
+                        block.setBlockData(invoke.state.blockData, false)
+                    }
+                }
+            }
+        }
+    }
+
     class FromTo(var from: Vector, var to: Vector)
+    class BlockPlacement(var state: BlockState, var place: Boolean)
 }

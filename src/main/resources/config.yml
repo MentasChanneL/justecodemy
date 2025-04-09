@@ -28,3 +28,4 @@ commands-messages:
   image-many-requests: "Too many requests! Please try again later"
   image-load-fail: "Failed to load image from link"
   image-load: "Image loaded to map with index %i"
+  region-no-selection: "Please create selection with /#wand"

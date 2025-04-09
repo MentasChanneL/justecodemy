@@ -43,7 +43,7 @@ object CustomItems {
 
     fun asCustomItem(stack: ItemStack?): CustomItem? {
         val item = stack?: return null
-        val meta = item.itemMeta
+        val meta = item.itemMeta?: return null
         if(!meta.persistentDataContainer.has(this.nameKey)) return null
         val id = meta.persistentDataContainer.get(this.nameKey, PersistentDataType.STRING)?: return null
         val customItem = registrations[id]?: return null

@@ -5,7 +5,6 @@ import com.mojang.brigadier.tree.LiteralCommandNode
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import study.prikolz.command.*
 import study.prikolz.gui.CustomGUI
@@ -26,6 +25,8 @@ object PluginCommands {
             r.register(ImageURLCommand.build(plugin))
             r.register(InfoCommand.build())
             r.register(WandCommand.build())
+            r.register(SetCommand.build())
+            r.register(SphereCommand.build())
         }
     }
 
