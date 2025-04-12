@@ -3,7 +3,10 @@ package study.prikolz
 import com.destroystokyo.paper.ParticleBuilder
 import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.identity.Identity
+import net.kyori.adventure.pointer.Pointer
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
 import org.bukkit.DyeColor
@@ -31,6 +34,7 @@ import study.prikolz.entity.CustomEntities
 import study.prikolz.gui.CustomGUI
 import study.prikolz.items.CustomItems
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 object EventsListener : Listener {
 
@@ -143,9 +147,25 @@ object EventsListener : Listener {
     }
 
     private fun renderMessage(player: Player, c1: Component, msg: Component, audience: Audience): Component {
-        var name = c1
-        prefixes[player.uniqueId]?.also { name = it.append(c1) }
-        return Component.empty().append(name).append(Component.text(" > ")).append(msg)
+        var name = Component.empty().append(c1) as Component
+        var message = Component.empty().append(msg) as Component
+        audience.get(Identity.UUID).getOrNull()?.also {
+            Bukkit.getPlayer(it)?.also {
+                message = message.replaceText(
+                    TextReplacementConfig.builder().match("@ ?(\\w+)")
+                        .replacement { result, text ->
+                            val valid = Bukkit.getPlayer(result.group(1))?: return@replacement text.build()
+                            if (it == valid) {
+                                it.playSound(it, "minecraft:entity.item.break", 1f, 1f)
+                                return@replacement Component.text("@${it.name}").color( TextColor.color(255, 150, 0) )
+                            }
+                            return@replacement Component.text("@${valid.name}").color( TextColor.color(0, 200, 255) )
+                        }.build()
+                )
+            }
+        }
+        prefixes[player.uniqueId]?.also { name = it.append(Component.empty().color(TextColor.color(255, 255, 255)).append(c1)) }
+        return Component.empty().append(name).append(Component.text(" > ")).append(message)
     }
 
     @EventHandler
