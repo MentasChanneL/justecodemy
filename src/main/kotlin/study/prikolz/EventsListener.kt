@@ -156,7 +156,7 @@ object EventsListener : Listener {
                         .replacement { result, text ->
                             val valid = Bukkit.getPlayer(result.group(1))?: return@replacement text.build()
                             if (it == valid) {
-                                it.playSound(it, "minecraft:entity.item.break", 1f, 1f)
+                                it.playSound(it, "minecraft:entity.item.break", 1f, 2f)
                                 return@replacement Component.text("@${it.name}").color( TextColor.color(255, 150, 0) )
                             }
                             return@replacement Component.text("@${valid.name}").color( TextColor.color(0, 200, 255) )
